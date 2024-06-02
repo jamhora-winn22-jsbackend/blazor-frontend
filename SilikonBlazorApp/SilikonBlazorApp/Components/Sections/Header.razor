@@ -1,0 +1,243 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using SilikonBlazorApp.Components.Account
+@using SilikonBlazorApp.Data
+@using System.Security.Claims
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IdentityUserAccessor UserAccessor
+@inject UserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject CookieService CookieService
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+<nav class="navbar">
+    <div class="nav">
+        <a class="logo" href="/">
+            <img src="images/@(isDark ? "dark-mode.svg" : "light-mode.svg")" alt="Silikon Logo">
+        </a>
+        <div class="nav-toggle">&#9776;</div>
+        <div class="menu">
+            <div class="menu-header">
+                <div class="menu-links">
+                    <a href="#!">Overview</a>
+                    <a href="#!">Features</a>
+                    <AuthorizeView>
+                        <Authorized>
+                            <a href="/courses">Courses</a>
+                        </Authorized>
+                    </AuthorizeView>
+                    <a href="/contacts">Contact</a>
+                </div>
+            </div>
+            <div class="user-controls">
+                <div class="theme-switch">
+                    <span class="theme-switch-light">Light</span>
+                    <label class="switch" for="switch-mode">
+                        <input type="checkbox" id="switch-mode" checked="@isDark" @onchange="ToggleTheme">
+                        <div class="circle"></div>
+                    </label>
+                    <span class="theme-switch-dark">Dark</span>
+                </div>
+                <AuthorizeView>
+                    <Authorized>
+                        @if (user != null)
+                        {
+                            <a href="/account/details" class="user-image">
+                                <img class="user-img" src="@($"images/uploads/profiles/{user.ProfileImage}")" alt="@user.FirstName @user.LastName">
+                            </a>
+                        }
+                        else
+                        {
+                            <p>Loading user information...</p>
+                        }
+                    </Authorized>
+                    <NotAuthorized>
+                        <div class="acount-button">
+                            <a href="/Account/Login" class="btn sign-in" type="submit">
+                                Sign in<i class="fa-solid fa-arrow-right-to-bracket"></i>
+                            </a>
+                            <a href="/Account/Register" class="btn sign-up" type="submit">Sign up<i class="fa-regular fa-user"></i></a>
+                        </div>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool isDark = false;
+    private ApplicationUser user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // var theme = await JS.InvokeAsync<string>("getCookie", "ThemeMode");
+        // if (theme == "dark")
+        // {
+        //     isDark = true;
+        // }
+        // var themeMode = CookieService.GetCookie("ThemeMode") ?? "light";
+        // isDark = themeMode == "dark";
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userId = authState.User?.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            user = await UserService.GetUserAsync(userId);
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var theme = await JS.InvokeAsync<string>("getCookie", "ThemeMode");
+                if (theme == "dark")
+                {
+                    isDark = true;
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during OnAfterRenderAsync: {ex.Message}");
+                // Log or handle the exception as needed
+            }
+        }
+    }
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         var theme = await JS.InvokeAsync<string>("getCookie", "ThemeMode");
+    //         if (theme == "dark")
+    //         {
+    //             isDark = true;
+    //             StateHasChanged();
+    //         }
+    //     }
+    // }
+    private async Task ToggleTheme(ChangeEventArgs e)
+    {
+        try
+        {
+            isDark = (bool)e.Value;
+            await JS.InvokeVoidAsync("toggleTheme");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error during ToggleTheme: {ex.Message}");
+            // Log or handle the exception as needed
+        }
+    }
+    // private async Task ToggleTheme(ChangeEventArgs e)
+    // {
+    //     isDark = (bool)e.Value;
+    //     await JS.InvokeVoidAsync("toggleTheme");
+    // }
+    // private async Task ToggleTheme(ChangeEventArgs e)
+    // {
+    //     isDark = (bool)e.Value;
+    //     var theme = isDark ? "dark" : "light";
+    //     await JSRuntime.InvokeVoidAsync("fetch", $"/sitesettings/changetheme?theme={theme}");
+    //     await JSRuntime.InvokeVoidAsync("setCookie", "ThemeMode", theme, 30);
+    //     StateHasChanged(); // Uppdatera komponenten efter temabyte
+    // }
+}
+
+
+
+@* @{
+    var themeMode = Context.Request.Cookies["ThemeMode"] ?? "light";
+    var isDark = (themeMode == "dark") ? true : false;
+
+    bool isAuthenticated = User.Identity!.IsAuthenticated;
+
+    var user = await UserManager.GetUserAsync(User);
+
+} *@
+@* @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using SilikonBlazorApp.Components.Account
+@using SilikonBlazorApp.Data
+@using System.Security.Claims
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IdentityUserAccessor UserAccessor
+@inject UserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@* @inject IdentityRedirectManager RedirectManager *@
+@*<nav class="navbar">
+    <div class="nav">
+        <a class="logo" href="/">
+            <img src="images/@(isDark ? "dark-mode.svg" : "light-mode.svg")" alt="Silikon Logo">
+        </a>
+        <div class="nav-toggle">&#9776;</div>
+        <div class="menu">
+            <div class="menu-header">
+                <div class="menu-links">
+                    <a href="#!">Overview</a>
+                    <a href="#!">Features</a>
+                    <AuthorizeView>
+                        <Authorized>
+                            <a href="/courses">Courses</a>
+                        </Authorized>
+                    </AuthorizeView>
+                    <a href="/contacts">Contact</a>
+                </div>
+            </div>
+            <div class="user-controls">
+                <div class="theme-switch">
+                    <span class="theme-switch-light">Light</span>
+                    <label class="switch" for="switch-mode">
+                        <input type="checkbox" id="switch-mode" checked="@isDark">
+                        <div class="circle"></div>
+                    </label>
+                    <span class="theme-switch-dark">Dark</span>
+                </div>
+                <AuthorizeView>
+                    <Authorized>
+@*                         @if (user != null)
+                        {
+
+                        } *@
+                       @* <a href="/account/details" class="user-image">
+                            <img class="user-img" src="@($"images/uploads/profiles/{user.ProfileImage}")" alt="@user.FirstName @user.LastName">
+                        </a>
+@*                         <a href="/account/details" class="user-image">
+                            <img class="user-img" src="images/uploads/profiles/@user!.ProfileImage" alt="@user.FirstName @user.LastName">
+                        </a> *@
+                    @*</Authorized>
+                    <NotAuthorized>
+                        <div class="acount-button">
+                            <a href="/Account/Login" class="btn sign-in" type="submit">
+                                Sign in<i class="fa-solid fa-arrow-right-to-bracket"></i>
+                            </a>
+                            <a href="/Account/Register" class="btn sign-up" type="submit">Sign up<i class="fa-regular fa-user"></i></a>
+                        </div>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    </div>
+</nav>
+@code {
+    private bool isDark = false;
+    private ApplicationUser user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userId = authState.User?.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            user = await UserService.GetUserAsync(userId);
+        }
+    }
+}
+ *@

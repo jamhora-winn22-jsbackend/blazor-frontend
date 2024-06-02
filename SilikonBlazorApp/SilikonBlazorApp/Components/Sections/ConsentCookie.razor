@@ -1,0 +1,95 @@
+﻿@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Http
+
+@inject IHttpContextAccessor Http
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@if (showConsentBanner)
+{
+    <div id="cookie-consent" class="alert alert-gray fixed-bottom">
+        <div class="container">
+            <span>This website uses cookies to improve user experience</span>
+            <button class="btn btn-theme" @onclick="AcceptCookieConsent">Ok</button>
+        </div>
+    </div>
+}
+
+@code {
+    private bool showConsentBanner = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var cookieConsent = await JSRuntime.InvokeAsync<string>("getCookie", "CookieConsent");
+            if (string.IsNullOrEmpty(cookieConsent))
+            {
+                showConsentBanner = true;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task AcceptCookieConsent()
+    {
+        await JSRuntime.InvokeVoidAsync("acceptCookieConsent");
+        showConsentBanner = false;
+    }
+}
+@* @if (showBanner)
+{
+    <div id="cookieConsent" class="alert alert-info alert-dismissible fade show" role="alert">
+        Consent to set cookies.
+        <button type="button" class="accept-policy close" data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString" @onclick="AcceptMessage">
+            Accept Cookie
+        </button>
+    </div>
+}
+@code {
+    ITrackingConsentFeature consentFeature;
+    bool showBanner;
+    string cookieString;
+
+    protected override void OnInitialized()
+    {
+        consentFeature = Http.HttpContext.Features.Get<ITrackingConsentFeature>();
+        showBanner = !consentFeature?.CanTrack ?? false;
+        cookieString = consentFeature?.CreateConsentCookie();
+    }
+
+    private void AcceptMessage()
+    {
+        Console.WriteLine("TestClick called");
+        // JsInterop call to store the consent cookies.
+        JSRuntime.InvokeVoidAsync("CookieFunction.acceptMessage", cookieString);
+    }
+} *@
+@* @if (showBanner)
+{
+    <div id="cookieConsent" class="alert alert-info alert-dismissible fade show" role="alert">
+        Consent to set cookies.
+        <button type="button" class="accept-policy close" data-dismiss="alert" aria-label="Close" @onclick="TestClick">
+            Accept Cookie
+        </button>
+    </div>
+}
+
+@code {
+    private ITrackingConsentFeature consentFeature;
+    private bool showBanner;
+    private string cookieString;
+
+    protected override void OnInitialized()
+    {
+        consentFeature = Http.HttpContext.Features.Get<ITrackingConsentFeature>();
+        showBanner = !consentFeature?.CanTrack ?? false;
+        cookieString = consentFeature?.CreateConsentCookie();
+    }
+
+    private async Task TestClick()
+    {
+        Console.WriteLine("TestClick called"); // Logga meddelande
+        await JSRuntime.InvokeVoidAsync("console.log", "JavaScript interop test"); // Testa interop-anrop
+    }
+} *@
+

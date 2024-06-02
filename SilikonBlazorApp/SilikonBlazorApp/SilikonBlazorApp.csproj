@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-SilikonBlazorApp-2f8872af-d447-4116-8c05-3afd5278ba68</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\jamho\.nuget\packages\aspnetcore.sasscompiler\1.77.2\build\..\runtimes\linux-arm64\src\dart" />
+    <None Remove="C:\Users\jamho\.nuget\packages\aspnetcore.sasscompiler\1.77.2\build\..\runtimes\linux-arm64\src\sass.snapshot" />
+    <None Remove="C:\Users\jamho\.nuget\packages\aspnetcore.sasscompiler\1.77.2\build\..\runtimes\linux-x64\src\dart" />
+    <None Remove="C:\Users\jamho\.nuget\packages\aspnetcore.sasscompiler\1.77.2\build\..\runtimes\linux-x64\src\sass.snapshot" />
+    <None Remove="C:\Users\jamho\.nuget\packages\aspnetcore.sasscompiler\1.77.2\build\..\runtimes\osx-arm64\src\dart" />
+    <None Remove="C:\Users\jamho\.nuget\packages\aspnetcore.sasscompiler\1.77.2\build\..\runtimes\osx-arm64\src\sass.snapshot" />
+    <None Remove="C:\Users\jamho\.nuget\packages\aspnetcore.sasscompiler\1.77.2\build\..\runtimes\osx-x64\src\dart" />
+    <None Remove="C:\Users\jamho\.nuget\packages\aspnetcore.sasscompiler\1.77.2\build\..\runtimes\osx-x64\src\sass.snapshot" />
+    <None Remove="C:\Users\jamho\.nuget\packages\aspnetcore.sasscompiler\1.77.2\build\..\runtimes\win-x64\src\dart.exe" />
+    <None Remove="C:\Users\jamho\.nuget\packages\aspnetcore.sasscompiler\1.77.2\build\..\runtimes\win-x64\src\sass.snapshot" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\accountValidation.js" />
+    <None Include="wwwroot\js\site.js" />
+    <None Include="wwwroot\js\validation.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SilikonBlazorApp.Client\SilikonBlazorApp.Client.csproj" />
+    <PackageReference Include="AspNetCore.SassCompiler" Version="1.77.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.5" />
+  </ItemGroup>
+
+</Project>
